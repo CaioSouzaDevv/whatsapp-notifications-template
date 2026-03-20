@@ -16,7 +16,7 @@ public class ImageBase64Util {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", outputStream);
 
-         String base64 = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        String base64 = Base64.getEncoder().encodeToString(outputStream.toByteArray());
         return "data:image/png;base64," + base64;
     }
 }
