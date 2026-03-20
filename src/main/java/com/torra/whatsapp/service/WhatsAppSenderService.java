@@ -20,12 +20,12 @@ public class WhatsAppSenderService {
             throws IOException, InterruptedException {
 
         String json = """
-        {
-          "phone": "%s",
-          "image": "%s",
-          "caption": "%s"
-        }
-        """.formatted(config.getPhone(), imageBase64, caption);
+                {
+                  "phone": "%s",
+                  "image": "%s",
+                  "caption": "%s"
+                }
+                """.formatted(config.getPhone(), imageBase64, caption);
 
         String url = "https://api.z-api.io/instances/%s/token/%s/send-image"
                 .formatted(config.getInstanceId(), config.getToken());
