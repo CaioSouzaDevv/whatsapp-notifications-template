@@ -12,7 +12,7 @@ public class ImageBase64Util {
     private ImageBase64Util() {
     }
 
-    public static String toBase64png(BufferedImage image) throws IOException {
+    public static String toBase64Png(BufferedImage image) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", outputStream);
 

@@ -1,4 +1,4 @@
-package com.torra.whatsapp.config.service;
+package com.torra.whatsapp.service;
 
 import java.awt.Color;
 import java.awt.Font;
