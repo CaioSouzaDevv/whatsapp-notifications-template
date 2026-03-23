@@ -24,14 +24,15 @@ public class Main {
             String title = "Meta HORA";
             String name = "NomeCoordenador";
             String message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-            String templatePath = "../resources/templates/template.png";
+            String templatePath = "resources/templates/template.png";
             String outputPath = "resultado.png";
 
             ZApiConfig config = new ZApiConfig(
-                    "3F0533A91EA4823D95E8022729239B50",
-                    "09AFB49A9EAE10B5BFFB358E",
-                    "Fab3e500b5ba14ba7a8ab4016102f8be0S",
-                    "5511984696489");
+                    "8f8a084a-b27f-4d7c-9b13-436887d5eebf",
+                    "137677",
+                    "c214868f-cdb7-4bc8-b300-99e94200a61e",
+                    "5511984696489"
+            );
 
             ImageGeneratorService imageGeneratorService = new ImageGeneratorService();
             WhatsAppSenderService whatsAppSenderService = new WhatsAppSenderService();
@@ -41,14 +42,16 @@ public class Main {
                     outputPath,
                     title,
                     name,
-                    message);
+                    message
+            );
 
             String imageBase64 = ImageBase64Util.toBase64Png(image);
 
             String response = whatsAppSenderService.sendImage(
                     config,
                     imageBase64,
-                    "Teste real Java");
+                    "Teste real Java"
+            );
 
             System.out.println("Imagem gerada com sucesso.");
             System.out.println(response);

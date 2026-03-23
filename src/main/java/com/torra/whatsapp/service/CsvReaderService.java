@@ -36,6 +36,10 @@ public class CsvReaderService {
                     continue;
                 }
 
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
                 String[] columns = line.split(",");
 
                 if (columns.length < 8) {
@@ -47,11 +51,10 @@ public class CsvReaderService {
                         columns[1].trim(),
                         columns[2].trim(),
                         columns[3].trim(),
-                        Double.parseDouble(columns[4].trim()),
-                        Double.parseDouble(columns[5].trim()),
+                        columns[4].trim(),
+                        columns[5].trim(),
                         columns[6].trim(),
-                        columns[7].trim()
-                );
+                        columns[7].trim());
 
                 notifications.add(data);
             }
