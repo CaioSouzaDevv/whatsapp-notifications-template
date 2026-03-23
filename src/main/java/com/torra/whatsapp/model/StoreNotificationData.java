@@ -1,4 +1,6 @@
 
+package com.torra.whatsapp.model;
+
 public class StoreNotificationData {
 
     private String storeId;
