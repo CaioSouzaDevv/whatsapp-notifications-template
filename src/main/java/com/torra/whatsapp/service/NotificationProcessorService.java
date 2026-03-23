@@ -3,6 +3,8 @@ package com.torra.whatsapp.service;
 import com.torra.whatsapp.config.ZApiConfig;
 import com.torra.whatsapp.model.StoreNotificationData;
 import com.torra.whatsapp.util.ImageBase64Util;
+import com.torra.whatsapp.util.LogUtil;
+
 import static com.torra.whatsapp.config.AppConfig.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -26,8 +28,11 @@ public class NotificationProcessorService {
 
         for (StoreNotificationData item : list) {
 
-            System.out.println("Processando: " + item.getCoordinatorName());
+LogUtil.info("Processando coordenador: " + item.getCoordinatorName()
+        + " | loja: " + item.getStoreName()
+        + " | telefone: " + item.getPhone());
 
+        
             BufferedImage image = imageGeneratorService.generateImage(
                     TEMPLATE_PATH,
                     OUTPUT_PATH,
@@ -51,8 +56,8 @@ public class NotificationProcessorService {
                     "Meta da loja " + item.getStoreName()
             );
 
-            System.out.println("Enviado para: " + item.getPhone());
-            System.out.println(response);
+        LogUtil.info("Mensagem adicionada para envio no telefone: " + item.getPhone());
+LogUtil.info("Resposta da API: " + response);
 
             Thread.sleep(2000);
         }
