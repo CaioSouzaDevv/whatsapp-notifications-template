@@ -1,5 +1,8 @@
 package com.torra.whatsapp;
 
+import com.torra.whatsapp.service.CsvReaderService;
+import com.torra.whatsapp.model.StoreNotificationData;
+import java.util.List;
 import java.awt.image.BufferedImage;
 
 import com.torra.whatsapp.config.ZApiConfig;
@@ -11,6 +14,13 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            CsvReaderService csvReaderService = new CsvReaderService();
+            List<StoreNotificationData> list = csvReaderService.read();
+
+            for (StoreNotificationData item : list) {
+                System.out.println(item.getCoordinatorName() + " - " + item.getStoreName() + " - " + item.getPhone());
+            }
+
             String title = "Meta HORA";
             String name = "NomeCoordenador";
             String message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
