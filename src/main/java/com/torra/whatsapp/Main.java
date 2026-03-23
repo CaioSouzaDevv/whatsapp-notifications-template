@@ -1,6 +1,7 @@
 package com.torra.whatsapp;
 
 import com.torra.whatsapp.service.NotificationProcessorService;
+import com.torra.whatsapp.util.LogUtil;
 
 public class Main {
 
@@ -9,8 +10,7 @@ public class Main {
             NotificationProcessorService processor = new NotificationProcessorService();
             processor.process();
         } catch (Exception e) {
-            System.err.println("Erro ao executar aplicação");
-            e.printStackTrace();
+            LogUtil.error("Erro ao executar aplicação", e);
         }
     }
 }
