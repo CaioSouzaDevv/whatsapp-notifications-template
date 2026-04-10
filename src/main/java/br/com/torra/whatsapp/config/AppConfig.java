@@ -2,7 +2,7 @@ package br.com.torra.whatsapp.config;
 
 public class AppConfig {
 
-    public static final String TEMPLATE_PATH = "resources/templates/template.png";
+    public static final String TEMPLATE_PATH = "templates/template.png";
     public static final String OUTPUT_PATH = "resultado.png";
     public static final String TITLE = "Meta HORA";
 
@@ -11,6 +11,6 @@ public class AppConfig {
     public static final String TOKEN = "c214868f-cdb7-4bc8-b300-99e94200a61e";
 
     private AppConfig() {
-        // evita instanciar
+        // evitar instanciar
     }
 }
