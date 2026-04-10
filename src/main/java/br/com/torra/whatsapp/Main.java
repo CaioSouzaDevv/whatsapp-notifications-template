@@ -1,7 +1,7 @@
-package com.torra.whatsapp;
+package br.com.torra.whatsapp;
 
-import com.torra.whatsapp.service.NotificationProcessorService;
-import com.torra.whatsapp.util.LogUtil;
+import br.com.torra.whatsapp.service.NotificationProcessorService;
+import br.com.torra.whatsapp.util.LogUtil;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package com.torra.whatsapp.service;
+package br.com.torra.whatsapp.service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -7,7 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
-import com.torra.whatsapp.config.ZApiConfig;
+import br.com.torra.whatsapp.config.ZApiConfig;
 
 public class WhatsAppSenderService {
 

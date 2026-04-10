@@ -1,4 +1,4 @@
-package com.torra.whatsapp.model;
+package br.com.torra.whatsapp.model;
 
 public class ProcessingResult {
 

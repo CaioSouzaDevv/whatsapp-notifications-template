@@ -1,4 +1,4 @@
-package com.torra.whatsapp.config;
+package br.com.torra.whatsapp.config;
 
 public class AppConfig {
 
