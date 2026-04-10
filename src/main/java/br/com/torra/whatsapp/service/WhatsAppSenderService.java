@@ -1,72 +1,31 @@
 package br.com.torra.whatsapp.service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-
 import br.com.torra.whatsapp.config.ZApiConfig;
+import br.com.torra.whatsapp.util.LogUtil;
 
 public class WhatsAppSenderService {
 
-        private final HttpClient httpClient;
+    public String sendImage(
+            ZApiConfig config,
+            String phone,
+            String imageBase64,
+            String caption) {
 
-        public WhatsAppSenderService() {
-                this.httpClient = HttpClient.newHttpClient();
-        }
+        long startTime = System.currentTimeMillis();
 
-        public String sendText(ZApiConfig config, String message)
-                        throws IOException, InterruptedException {
+        LogUtil.info("Preparando envio MOCK | telefone=" + phone
+                + " | caption=" + caption
+                + " | base64_length=" + imageBase64.length());
 
-                String json = "{\"to_number\":\"" + config.getPhone() + "\","
-                                + "\"type\":\"text\","
-                                + "\"message\":\"" + message + "\"}";
+        long endTime = System.currentTimeMillis();
 
-                String url = "https://api.maytapi.com/api/%s/%s/sendMessage"
-                                .formatted(config.getProductId(), config.getPhoneId());
+        LogUtil.info("Resposta MOCK | telefone=" + phone
+                + " | status=200"
+                + " | tempo=" + (endTime - startTime) + "ms");
 
-                HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create(url))
-                                .header("Content-Type", "application/json")
-                                .header("Accept", "application/json")
-                                .header("x-maytapi-key", config.getToken())
-                                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
-                                .build();
+        LogUtil.info("Body resposta MOCK | telefone=" + phone
+                + " | response={\"success\":true,\"mock\":true}");
 
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                return "Status: " + response.statusCode() + "\nResposta: " + response.body();
-        }
-
-        public String sendImage(ZApiConfig config, String imageBase64, String caption)
-                        throws IOException, InterruptedException {
-
-                String json = "{\"to_number\":\"" + config.getPhone() + "\","
-                                + "\"type\":\"media\","
-                                + "\"message\":\"" + imageBase64 + "\","
-                                + "\"text\":\"" + caption + "\"}";
-
-                String url = "https://api.maytapi.com/api/%s/%s/sendMessage"
-                                .formatted(config.getProductId(), config.getPhoneId());
-
-                System.out.println("URL: " + url);
-                System.out.println("PHONE: " + config.getPhone());
-                System.out.println("BASE64 PREFIX: " + imageBase64.substring(0, 40));
-                System.out.println("BASE64 LENGTH: " + imageBase64.length());
-                System.out.println("CAPTION: " + caption);
-
-                HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create(url))
-                                .header("Content-Type", "application/json")
-                                .header("Accept", "application/json")
-                                .header("x-maytapi-key", config.getToken())
-                                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
-                                .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                return "Status: " + response.statusCode() + "\nResposta: " + response.body();
-        }
+        return "Status: 200\nResposta: {\"success\":true,\"mock\":true}";
+    }
 }

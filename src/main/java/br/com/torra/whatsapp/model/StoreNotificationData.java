@@ -1,34 +1,34 @@
-
 package br.com.torra.whatsapp.model;
 
 public class StoreNotificationData {
 
     private String storeId;
     private String storeName;
-    private String coordinatorName;
-    private String phone;
-    private String goalValue;
-    private String currentValue;
-    private String referenceDate;
-    private String message;
+    private String metaAtivados;
+    private String qtdAprovacoes;
+    private String qtdAprovacoesLy;
+    private String qtdPropostas;
+    private String metaPadraoPcj;
+    private String metaPadraoParticipacao;
 
     public StoreNotificationData(
             String storeId,
             String storeName,
-            String coordinatorName,
-            String phone,
-            String goalValue,
-            String currentValue,
-            String referenceDate,
-            String message) {
+            String metaAtivados,
+            String qtdAprovacoes,
+            String qtdAprovacoesLy,
+            String qtdPropostas,
+            String metaPadraoPcj,
+            String metaPadraoParticipacao
+    ) {
         this.storeId = storeId;
         this.storeName = storeName;
-        this.coordinatorName = coordinatorName;
-        this.phone = phone;
-        this.goalValue = goalValue;
-        this.currentValue = currentValue;
-        this.referenceDate = referenceDate;
-        this.message = message;
+        this.metaAtivados = metaAtivados;
+        this.qtdAprovacoes = qtdAprovacoes;
+        this.qtdAprovacoesLy = qtdAprovacoesLy;
+        this.qtdPropostas = qtdPropostas;
+        this.metaPadraoPcj = metaPadraoPcj;
+        this.metaPadraoParticipacao = metaPadraoParticipacao;
     }
 
     public String getStoreId() {
@@ -39,27 +39,27 @@ public class StoreNotificationData {
         return storeName;
     }
 
-    public String getCoordinatorName() {
-        return coordinatorName;
+    public String getMetaAtivados() {
+        return metaAtivados;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getQtdAprovacoes() {
+        return qtdAprovacoes;
     }
 
-    public String getGoalValue() {
-        return goalValue;
+    public String getQtdAprovacoesLy() {
+        return qtdAprovacoesLy;
     }
 
-    public String getCurrentValue() {
-        return currentValue;
+    public String getQtdPropostas() {
+        return qtdPropostas;
     }
 
-    public String getReferenceDate() {
-        return referenceDate;
+    public String getMetaPadraoPcj() {
+        return metaPadraoPcj;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMetaPadraoParticipacao() {
+        return metaPadraoParticipacao;
     }
 }

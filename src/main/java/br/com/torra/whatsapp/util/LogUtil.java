@@ -1,37 +1,22 @@
 package br.com.torra.whatsapp.util;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LogUtil {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    private LogUtil() {
-    }
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void info(String message) {
-        System.out.println(format("INFO", message));
+        System.out.println("[INFO] " + now() + " - " + message);
     }
 
-    public static void warn(String message) {
-        System.out.println(format("WARN", message));
+    public static void error(String message, Exception e) {
+        System.err.println("[ERROR] " + now() + " - " + message);
+        e.printStackTrace();
     }
 
-    public static void error(String message) {
-        System.err.println(format("ERROR", message));
-    }
-
-    public static void error(String message, Exception exception) {
-        System.err.println(format("ERROR", message));
-        exception.printStackTrace();
-    }
-
-    private static String format(String level, String message) {
-        return "[" + level + "] "
-                + LocalDateTime.now().format(FORMATTER)
-                + " - "
-                + message;
+    private static String now() {
+        return sdf.format(new Date());
     }
 }
