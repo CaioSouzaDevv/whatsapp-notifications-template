@@ -1,4 +1,4 @@
-package com.torra.whatsapp.util;
+package br.com.torra.whatsapp.util;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;

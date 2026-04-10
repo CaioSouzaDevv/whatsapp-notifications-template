@@ -1,6 +1,6 @@
-package com.torra.whatsapp.service;
+package br.com.torra.whatsapp.service;
 
-import com.torra.whatsapp.model.StoreNotificationData;
+import br.com.torra.whatsapp.model.StoreNotificationData;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

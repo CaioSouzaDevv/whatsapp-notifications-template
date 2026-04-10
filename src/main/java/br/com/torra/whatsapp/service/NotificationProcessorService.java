@@ -1,12 +1,12 @@
-package com.torra.whatsapp.service;
+package br.com.torra.whatsapp.service;
 
-import com.torra.whatsapp.config.ZApiConfig;
-import com.torra.whatsapp.model.ProcessingResult;
-import com.torra.whatsapp.model.StoreNotificationData;
-import com.torra.whatsapp.util.ImageBase64Util;
-import com.torra.whatsapp.util.LogUtil;
+import br.com.torra.whatsapp.config.ZApiConfig;
+import br.com.torra.whatsapp.model.ProcessingResult;
+import br.com.torra.whatsapp.model.StoreNotificationData;
+import br.com.torra.whatsapp.util.ImageBase64Util;
+import br.com.torra.whatsapp.util.LogUtil;
 
-import static com.torra.whatsapp.config.AppConfig.*;
+import static br.com.torra.whatsapp.config.AppConfig.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
