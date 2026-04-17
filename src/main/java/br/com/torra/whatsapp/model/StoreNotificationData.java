@@ -10,6 +10,7 @@ public class StoreNotificationData {
     private String qtdPropostas;
     private String metaPadraoPcj;
     private String metaPadraoParticipacao;
+    private String phone;
 
     public StoreNotificationData(
             String storeId,
@@ -19,8 +20,8 @@ public class StoreNotificationData {
             String qtdAprovacoesLy,
             String qtdPropostas,
             String metaPadraoPcj,
-            String metaPadraoParticipacao
-    ) {
+            String metaPadraoParticipacao,
+            String phone) {
         this.storeId = storeId;
         this.storeName = storeName;
         this.metaAtivados = metaAtivados;
@@ -29,6 +30,8 @@ public class StoreNotificationData {
         this.qtdPropostas = qtdPropostas;
         this.metaPadraoPcj = metaPadraoPcj;
         this.metaPadraoParticipacao = metaPadraoParticipacao;
+        this.phone = phone;
+
     }
 
     public String getStoreId() {
@@ -61,5 +64,9 @@ public class StoreNotificationData {
 
     public String getMetaPadraoParticipacao() {
         return metaPadraoParticipacao;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 }
