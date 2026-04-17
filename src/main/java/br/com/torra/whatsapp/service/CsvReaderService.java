@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CsvReaderService {
 
-    private static final String FILE_PATH = "data/hora.csv";
+    private static final String FILE_PATH = "data/hora-mock.csv";
 
     public List<StoreNotificationData> read() {
         List<StoreNotificationData> notifications = new ArrayList<>();
@@ -46,21 +46,22 @@ public class CsvReaderService {
 
                 String[] columns = line.split(";", -1);
 
-                if (columns.length < 19) {
+                if (columns.length < 20) {
                     LogUtil.info("Linha ignorada por quantidade insuficiente de colunas | linha="
                             + lineNumber + " | colunas=" + columns.length + " | conteúdo=" + line);
                     continue;
                 }
 
                 StoreNotificationData data = new StoreNotificationData(
-                        columns[0].trim(),   // FilialID_TACC
-                        columns[1].trim(),   // nm_filial
-                        columns[2].trim(),   // V_Meta_Ativados
-                        columns[3].trim(),   // Qtd_Aprovacoes
-                        columns[4].trim(),   // Qtd_Aprovacoes_ly
-                        columns[5].trim(),   // Qtd_Propostas
-                        columns[11].trim(),  // V_Meta_Padrao_PCJ
-                        columns[15].trim()   // V_Meta_Padrao_Participacao
+                        columns[0].trim(),
+                        columns[1].trim(),
+                        columns[2].trim(),
+                        columns[3].trim(),
+                        columns[4].trim(),
+                        columns[5].trim(),
+                        columns[11].trim(),
+                        columns[15].trim(),
+                        columns[19].trim()
                 );
 
                 notifications.add(data);

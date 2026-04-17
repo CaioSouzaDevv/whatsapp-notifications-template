@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class ImageGeneratorService {
@@ -18,14 +17,14 @@ public class ImageGeneratorService {
             String templatePath,
             String outputPath,
             String title,
-            StoreNotificationData item) throws IOException {
+            StoreNotificationData item) throws Exception {
 
         InputStream templateStream = getClass()
                 .getClassLoader()
                 .getResourceAsStream(templatePath);
 
         if (templateStream == null) {
-            throw new RuntimeException("Template não encontrado em: " + templatePath);
+            throw new RuntimeException("Template n\u00e3o encontrado em: " + templatePath);
         }
 
         BufferedImage bufferedImage = ImageIO.read(templateStream);
@@ -34,7 +33,7 @@ public class ImageGeneratorService {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawHeaderStoreName(graphics, "Meta" + " " + item.getStoreName());
+        drawHeaderStoreName(graphics, "Meta " + safeValue(item.getStoreName()));
         drawMetrics(graphics, item);
 
         graphics.dispose();
@@ -46,7 +45,7 @@ public class ImageGeneratorService {
 
     private void drawHeaderStoreName(Graphics2D graphics, String storeName) {
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("SansSerif", Font.BOLD, 36));
+        graphics.setFont(new Font("Dialog", Font.BOLD, 36));
         graphics.drawString(storeName, 400, 150);
     }
 
@@ -58,17 +57,17 @@ public class ImageGeneratorService {
         int valueX = 690;
 
         Color primaryColor = new Color(255, 81, 1);
-        Font labelFont = new Font("SansSerif", Font.BOLD, 28);
-        Font valueFont = new Font("SansSerif", Font.BOLD, 28);
+        Font labelFont = new Font("Dialog", Font.BOLD, 28);
+        Font valueFont = new Font("Dialog", Font.BOLD, 28);
 
         graphics.setColor(primaryColor);
 
         drawLine(graphics, "Meta Ativados:", item.getMetaAtivados(), labelFont, valueFont, labelX, valueX, startY);
 
-        drawLine(graphics, "Aprovações:", item.getQtdAprovacoes(), labelFont, valueFont, labelX, valueX,
+        drawLine(graphics, "Aprova\u00e7\u00f5es:", item.getQtdAprovacoes(), labelFont, valueFont, labelX, valueX,
                 startY += lineHeight);
 
-        drawLine(graphics, "Aprovações LY:", item.getQtdAprovacoesLy(), labelFont, valueFont, labelX, valueX,
+        drawLine(graphics, "Aprova\u00e7\u00f5es LY:", item.getQtdAprovacoesLy(), labelFont, valueFont, labelX, valueX,
                 startY += lineHeight);
 
         drawLine(graphics, "Propostas:", item.getQtdPropostas(), labelFont, valueFont, labelX, valueX,
@@ -79,7 +78,8 @@ public class ImageGeneratorService {
         drawLine(graphics, "Meta PCJ:", item.getMetaPadraoPcj(), labelFont, valueFont, labelX, valueX,
                 startY += lineHeight);
 
-        drawLine(graphics, "Meta Participação:", item.getMetaPadraoParticipacao(), labelFont, valueFont, labelX, valueX,
+        drawLine(graphics, "Meta Participa\u00e7\u00e3o:", item.getMetaPadraoParticipacao(), labelFont, valueFont,
+                labelX, valueX,
                 startY += lineHeight);
     }
 

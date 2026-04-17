@@ -29,7 +29,12 @@ public class NotificationProcessorService {
 
         StoreNotificationData item = list.get(0);
 
-        LogUtil.info("Gerando imagem de teste da loja: " + item.getStoreName());
+        if (item.getPhone() == null || item.getPhone().isBlank()) {
+            LogUtil.info("Telefone inválido para a loja: " + item.getStoreName());
+            return;
+        }
+
+        LogUtil.info("Gerando imagem da loja: " + item.getStoreName());
 
         BufferedImage image = imageGeneratorService.generateImage(
                 TEMPLATE_PATH,
@@ -39,5 +44,10 @@ public class NotificationProcessorService {
         );
 
         LogUtil.info("Imagem gerada com sucesso.");
+
+        WhatsAppSenderService sender = new WhatsAppSenderService();
+        sender.sendImage(item.getPhone(), image);
+
+        LogUtil.info("Envio finalizado.");
     }
 }
