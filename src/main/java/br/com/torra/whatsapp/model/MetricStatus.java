@@ -1,6 +1,6 @@
 package br.com.torra.whatsapp.model;
 
-public enum MetricsStatus {
+public enum MetricStatus {
     GOOD,
     WARNING,
     BAD
