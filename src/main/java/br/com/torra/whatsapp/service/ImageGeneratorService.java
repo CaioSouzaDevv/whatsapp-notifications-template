@@ -45,7 +45,7 @@ public class ImageGeneratorService {
 
     private void drawHeaderStoreName(Graphics2D graphics, String storeName) {
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Dialog", Font.BOLD, 36));
+        graphics.setFont(new Font("Roboto", Font.BOLD, 36));
         graphics.drawString(storeName, 400, 150);
     }
 
@@ -57,8 +57,8 @@ public class ImageGeneratorService {
         int valueX = 690;
 
         Color primaryColor = new Color(255, 81, 1);
-        Font labelFont = new Font("Dialog", Font.BOLD, 28);
-        Font valueFont = new Font("Dialog", Font.BOLD, 28);
+        Font labelFont = new Font("Roboto", Font.BOLD, 28);
+        Font valueFont = new Font("Roboto", Font.BOLD, 28);
 
         graphics.setColor(primaryColor);
 
