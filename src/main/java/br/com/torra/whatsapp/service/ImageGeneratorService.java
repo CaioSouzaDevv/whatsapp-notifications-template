@@ -4,7 +4,6 @@ import br.com.torra.whatsapp.model.MetricStatus;
 import br.com.torra.whatsapp.model.StoreNotificationData;
 
 import javax.imageio.ImageIO;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -62,8 +61,10 @@ public class ImageGeneratorService {
         int lineHeight = 48;
 
         int labelX = 300;
-        int valueX = 690;
-        int arrowX = valueX - 40; // seta à esquerda do valor
+        int valueX = 630;
+        int arrowX = valueX + 38;
+
+        
 
         Color primaryColor = new Color(255, 81, 1);
         Font labelFont = new Font("Roboto", Font.BOLD, 28);
@@ -175,7 +176,7 @@ public class ImageGeneratorService {
 
         if (actualValue != null && targetValue != null) {
             MetricStatus status = metricEvaluator.evaluate(actualValue, targetValue);
-            drawStatusArrow(graphics, status, xArrow, y - 25);
+            drawStatusArrow(graphics, status, xArrow, y);
         }
     }
 
@@ -183,42 +184,18 @@ public class ImageGeneratorService {
         Color green = new Color(34, 177, 76);
         Color red = new Color(220, 53, 69);
 
+        Font arrowFont = new Font("Arial", Font.BOLD, 24);
+        graphics.setFont(arrowFont);
+
         if (status == MetricStatus.GOOD) {
+   
             graphics.setColor(green);
-            drawUpArrow(graphics, x, y, 22, 22);
+            graphics.drawString("▲", x, y - 2);
             return;
         }
 
         graphics.setColor(red);
-        drawDownArrow(graphics, x, y, 22, 22);
-    }
-
-    private void drawUpArrow(Graphics2D graphics, int x, int y, int width, int height) {
-        graphics.setStroke(new BasicStroke(5));
-
-        int centerX = x + (width / 1);
-        int topY = y;
-        int bottomY = y + height;
-
-        graphics.drawLine(centerX, bottomY, centerX, y + 10);
-
-        int[] arrowHeadX = { centerX, centerX - 8, centerX + 8 };
-        int[] arrowHeadY = { topY, topY + 10, topY + 10 };
-        graphics.fillPolygon(arrowHeadX, arrowHeadY, 3);
-    }
-
-    private void drawDownArrow(Graphics2D graphics, int x, int y, int width, int height) {
-        graphics.setStroke(new BasicStroke(5));
-
-        int centerX = x + (width / 2);
-        int topY = y;
-        int bottomY = y + height;
-
-        graphics.drawLine(centerX, topY, centerX, bottomY - 10);
-
-        int[] arrowHeadX = { centerX, centerX - 8, centerX + 8 };
-        int[] arrowHeadY = { bottomY, bottomY - 10, bottomY - 10 };
-        graphics.fillPolygon(arrowHeadX, arrowHeadY, 3);
+        graphics.drawString("▼", x, y);
     }
 
     private Double safeParse(String value) {
