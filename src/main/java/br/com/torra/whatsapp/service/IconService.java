@@ -1,6 +1,7 @@
 package br.com.torra.whatsapp.service;
 
 import br.com.torra.whatsapp.model.MetricStatus;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -12,9 +13,12 @@ public class IconService {
     private final Map<MetricStatus, BufferedImage> icons = new EnumMap<>(MetricStatus.class);
 
     public IconService() {
-        icons.put(MetricStatus.GOOD, loadIcon("icons/up.png"));
-        icons.put(MetricStatus.WARNING, loadIcon("icons/warning.png"));
-        icons.put(MetricStatus.BAD, loadIcon("icons/down.png"));
+        BufferedImage upIcon = loadIcon("icons/up.png");
+        BufferedImage downIcon = loadIcon("icons/down.png");
+
+        icons.put(MetricStatus.GOOD, upIcon);
+        icons.put(MetricStatus.WARNING, downIcon);
+        icons.put(MetricStatus.BAD, downIcon);
     }
 
     public BufferedImage get(MetricStatus status) {
@@ -22,11 +26,7 @@ public class IconService {
     }
 
     private BufferedImage loadIcon(String path) {
-        try {
-            InputStream stream = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(path);
-
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)) {
             if (stream == null) {
                 throw new RuntimeException("Ícone não encontrado: " + path);
             }
