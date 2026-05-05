@@ -12,7 +12,7 @@ import java.util.*;
 
 public class CsvReaderService {
 
-    private static final String FILE_PATH = "data/hora-mock.csv";
+    private static final String FILE_PATH = "data/hora-mock-completo.csv";
 
     public List<StoreNotificationData> read() {
         List<StoreNotificationData> notifications = new ArrayList<>();
@@ -37,8 +37,6 @@ public class CsvReaderService {
             String[] headers = headerLine.split(";", -1);
             Map<String, Integer> headerIndex = buildHeaderIndex(headers);
 
-            validateRequiredColumns(headerIndex);
-
             String line;
             int lineNumber = 1;
 
@@ -53,15 +51,15 @@ public class CsvReaderService {
 
                 try {
                     StoreNotificationData data = new StoreNotificationData(
-                            get(columns, headerIndex, "FilialID_TACC"),
-                            get(columns, headerIndex, "nm_filial"),
+                            get(columns, headerIndex, "FilialID_TACC", "filial_id"),
+                            get(columns, headerIndex, "nm_filial", "filial", "nome"),
                             get(columns, headerIndex, "V_Meta_Ativados"),
-                            get(columns, headerIndex, "Qtd_Aprovacoes"),
+                            get(columns, headerIndex, "Qtd_Aprovacoes", "Aprovados"),
                             get(columns, headerIndex, "Qtd_Aprovacoes_ly"),
-                            get(columns, headerIndex, "Qtd_Propostas"),
-                            get(columns, headerIndex, "V_Meta_Padrao_PCJ"),
-                            get(columns, headerIndex, "V_Meta_Padrao_Participacao"),
-                            normalizePhone(getLastColumn(columns)) // ← TELEFONE PEGO AUTOMÁTICO
+                            get(columns, headerIndex, "Qtd_Propostas", "Indicados"),
+                            get(columns, headerIndex, "V_Meta_Padrao_PCJ", "Meta_PCJ"),
+                            get(columns, headerIndex, "V_Meta_Padrao_Participacao", "Meta_Participacao_%"),
+                            get(columns, headerIndex, "telefone")
                     );
 
                     notifications.add(data);
@@ -101,10 +99,6 @@ public class CsvReaderService {
                 csvPhone = csvPhone.substring(2);
             }
 
-            System.out.println("Comparando -> webhook: " + webhookPhone
-                    + " | csv: " + csvPhone
-                    + " | loja: " + item.getStoreName());
-
             if (webhookPhone.equals(csvPhone)) {
                 return item;
             }
@@ -112,10 +106,6 @@ public class CsvReaderService {
 
         return null;
     }
-
-    // ==========================
-    // Helpers
-    // ==========================
 
     private Map<String, Integer> buildHeaderIndex(String[] headers) {
         Map<String, Integer> map = new HashMap<>();
@@ -127,39 +117,16 @@ public class CsvReaderService {
         return map;
     }
 
-    private void validateRequiredColumns(Map<String, Integer> map) {
-        List<String> required = List.of(
-                "FilialID_TACC",
-                "nm_filial",
-                "V_Meta_Ativados",
-                "Qtd_Aprovacoes",
-                "Qtd_Aprovacoes_ly",
-                "Qtd_Propostas",
-                "V_Meta_Padrao_PCJ",
-                "V_Meta_Padrao_Participacao");
+    private String get(String[] columns, Map<String, Integer> map, String... keys) {
+        for (String key : keys) {
+            Integer index = map.get(key);
 
-        for (String column : required) {
-            if (!map.containsKey(column)) {
-                throw new RuntimeException("Coluna obrigatória não encontrada no CSV: " + column);
+            if (index != null && index < columns.length) {
+                return columns[index].trim();
             }
         }
-    }
 
-    private String get(String[] columns, Map<String, Integer> map, String key) {
-        Integer index = map.get(key);
-
-        if (index == null || index >= columns.length) {
-            return "";
-        }
-
-        return columns[index].trim();
-    }
-
-    private String getLastColumn(String[] columns) {
-        if (columns.length == 0) {
-            return "";
-        }
-        return columns[columns.length - 1].trim();
+        return "";
     }
 
     private String normalizePhone(String phone) {
