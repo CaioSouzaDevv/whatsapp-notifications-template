@@ -1,16 +1,17 @@
 package br.com.torra.whatsapp;
 
 import br.com.torra.whatsapp.config.AppConfig;
-import br.com.torra.whatsapp.model.StoreNotificationData;
-import br.com.torra.whatsapp.service.CsvReaderService;
-import br.com.torra.whatsapp.service.ImageGeneratorService;
+import br.com.torra.whatsapp.service.DashboardProcessorService;
 import br.com.torra.whatsapp.service.WhatsAppSenderService;
+import br.com.torra.whatsapp.util.LogUtil;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -18,24 +19,29 @@ import java.nio.charset.StandardCharsets;
 
 public class WebhookServer {
 
+    private static final int PORT = 8080;
+    private static final String VERIFY_TOKEN = "teste123";
+
+    public static void main(String[] args) throws Exception {
+        start();
+    }
+
     public static void start() throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/webhook", new WebhookHandler());
         server.setExecutor(null);
         server.start();
 
-        System.out.println("Servidor rodando em http://localhost:8080/webhook");
+        LogUtil.info("Webhook rodando na porta " + PORT);
     }
 
     static class WebhookHandler implements HttpHandler {
 
-        private final CsvReaderService csvReaderService;
-        private final ImageGeneratorService imageGeneratorService;
+        private final DashboardProcessorService dashboardProcessorService;
         private final WhatsAppSenderService whatsAppSenderService;
 
         public WebhookHandler() {
-            this.csvReaderService = new CsvReaderService();
-            this.imageGeneratorService = new ImageGeneratorService();
+            this.dashboardProcessorService = new DashboardProcessorService();
             this.whatsAppSenderService = new WhatsAppSenderService();
         }
 
@@ -57,7 +63,8 @@ public class WebhookServer {
                 respond(exchange, 405, "Método não permitido");
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error("Erro ao processar webhook", e);
+
                 try {
                     respond(exchange, 500, "Erro interno");
                 } catch (Exception ignored) {
@@ -77,7 +84,8 @@ public class WebhookServer {
             String token = getQueryParam(query, "hub.verify_token");
             String challenge = getQueryParam(query, "hub.challenge");
 
-            if ("subscribe".equals(mode) && "teste123".equals(token) && challenge != null) {
+            if ("subscribe".equals(mode) && VERIFY_TOKEN.equals(token) && challenge != null) {
+                LogUtil.info("Webhook verificado com sucesso.");
                 respond(exchange, 200, challenge);
                 return;
             }
@@ -88,15 +96,15 @@ public class WebhookServer {
         private void handlePost(HttpExchange exchange) throws Exception {
             String body = readBody(exchange);
 
-            System.out.println("Payload recebido:");
+            LogUtil.info("Webhook POST recebido:");
             System.out.println(body);
 
-            extractAndProcess(body);
+            processPayload(body);
 
             respond(exchange, 200, "EVENT_RECEIVED");
         }
 
-        private void extractAndProcess(String body) {
+        private void processPayload(String body) {
             try {
                 JSONObject json = new JSONObject(body);
 
@@ -105,7 +113,7 @@ public class WebhookServer {
                 JSONObject value = changes.getJSONObject("value");
 
                 if (!value.has("messages")) {
-                    System.out.println("Sem mensagens no payload.");
+                    LogUtil.info("Payload sem messages. Provavelmente status de envio/entrega.");
                     return;
                 }
 
@@ -114,17 +122,17 @@ public class WebhookServer {
                 String from = message.getString("from");
                 String type = message.getString("type");
 
-                System.out.println("Telefone: " + from);
-                System.out.println("Tipo da mensagem: " + type);
+                LogUtil.info("Telefone origem: " + from);
+                LogUtil.info("Tipo mensagem: " + type);
 
-                if ("button".equals(type)) {
+                if ("button".equalsIgnoreCase(type)) {
                     JSONObject button = message.getJSONObject("button");
 
                     String payload = button.optString("payload", "");
                     String text = button.optString("text", "");
 
-                    System.out.println("Botão clicado (payload): " + payload);
-                    System.out.println("Botão clicado (text): " + text);
+                    LogUtil.info("Botão clicado payload: " + payload);
+                    LogUtil.info("Botão clicado text: " + text);
 
                     if ("Ok".equalsIgnoreCase(payload) || "Ok".equalsIgnoreCase(text)) {
                         processConfirmedClick(from);
@@ -133,15 +141,21 @@ public class WebhookServer {
                     return;
                 }
 
-                if ("interactive".equals(type)) {
+                if ("interactive".equalsIgnoreCase(type)) {
                     JSONObject interactive = message.getJSONObject("interactive");
+
+                    if (!interactive.has("button_reply")) {
+                        LogUtil.info("Interactive sem button_reply.");
+                        return;
+                    }
+
                     JSONObject buttonReply = interactive.getJSONObject("button_reply");
 
                     String buttonId = buttonReply.optString("id", "");
                     String buttonTitle = buttonReply.optString("title", "");
 
-                    System.out.println("Botão clicado (id): " + buttonId);
-                    System.out.println("Botão clicado (title): " + buttonTitle);
+                    LogUtil.info("Botão interativo id: " + buttonId);
+                    LogUtil.info("Botão interativo title: " + buttonTitle);
 
                     if ("ok".equalsIgnoreCase(buttonId) || "Ok".equalsIgnoreCase(buttonTitle)) {
                         processConfirmedClick(from);
@@ -150,44 +164,40 @@ public class WebhookServer {
                     return;
                 }
 
-                System.out.println("Tipo de mensagem não tratado: " + type);
+                LogUtil.info("Tipo de mensagem ignorado: " + type);
 
             } catch (Exception e) {
-                System.out.println("Erro ao extrair dados do payload.");
-                e.printStackTrace();
+                LogUtil.error("Erro ao interpretar payload do webhook", e);
             }
         }
 
         private void processConfirmedClick(String phone) {
             try {
-                System.out.println("Processando clique confirmado para o telefone: " + phone);
+                LogUtil.info("Clique confirmado. Gerando dashboard...");
 
-                StoreNotificationData item = csvReaderService.findByPhone(phone);
+                dashboardProcessorService.process();
 
-                if (item == null) {
-                    System.out.println("Nenhuma loja encontrada para o telefone: " + phone);
-                    return;
+                File imageFile = new File(AppConfig.OUTPUT_PATH);
+
+                if (!imageFile.exists()) {
+                    throw new RuntimeException("Imagem não encontrada em: " + AppConfig.OUTPUT_PATH);
                 }
 
-                System.out.println("Loja encontrada: " + item.getStoreName());
-                System.out.println("Gerando imagem...");
+                BufferedImage image = ImageIO.read(imageFile);
 
-                BufferedImage image = imageGeneratorService.generateImage(
-                        AppConfig.TEMPLATE_PATH,
-                        AppConfig.OUTPUT_PATH,
-                        AppConfig.TITLE,
-                        item);
+                if (image == null) {
+                    throw new RuntimeException("Erro ao carregar imagem gerada: " + AppConfig.OUTPUT_PATH);
+                }
 
-                System.out.println("Imagem gerada com sucesso.");
-                System.out.println("Enviando imagem para o telefone: " + phone);
+                LogUtil.info("Imagem carregada: " + AppConfig.OUTPUT_PATH);
+                LogUtil.info("Enviando imagem para: " + phone);
 
                 whatsAppSenderService.sendImage(phone, image);
 
-                System.out.println("Imagem enviada com sucesso.");
+                LogUtil.info("Fluxo de envio da imagem finalizado.");
 
             } catch (Exception e) {
-                System.out.println("Erro ao processar clique confirmado.");
-                e.printStackTrace();
+                LogUtil.error("Erro ao processar clique confirmado", e);
             }
         }
 
@@ -196,6 +206,7 @@ public class WebhookServer {
 
             for (String pair : pairs) {
                 String[] parts = pair.split("=", 2);
+
                 if (parts.length == 2 && key.equals(parts[0])) {
                     return parts[1];
                 }

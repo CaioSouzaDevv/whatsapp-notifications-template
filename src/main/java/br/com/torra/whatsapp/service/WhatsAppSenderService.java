@@ -18,6 +18,52 @@ public class WhatsAppSenderService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
+    // ===================== TEMPLATE =====================
+    public void sendTemplate(String phone) {
+        try {
+            String url = "https://graph.facebook.com/"
+                    + META_API_VERSION + "/"
+                    + META_PHONE_NUMBER_ID + "/messages";
+
+            String body = "{"
+                    + "\"messaging_product\":\"whatsapp\","
+                    + "\"to\":\"" + phone + "\","
+                    + "\"type\":\"template\","
+                    + "\"template\":{"
+                    + "\"name\":\"dados_hora\","
+                    + "\"language\":{\"code\":\"pt_BR\"},"
+                    + "\"components\":["
+                    + "{"
+                    + "\"type\":\"body\","
+                    + "\"parameters\":["
+                    + "{\"type\":\"text\",\"text\":\"Caio\"},"
+                    + "{\"type\":\"text\",\"text\":\"04/05/2026\"}"
+                    + "]"
+                    + "}"
+                    + "]"
+                    + "}"
+                    + "}";
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + META_ACCESS_TOKEN)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            LogUtil.info("Enviando template...");
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            LogUtil.info("Template Status: " + response.statusCode());
+            LogUtil.info("Template Response: " + response.body());
+
+        } catch (Exception e) {
+            LogUtil.error("Erro ao enviar template", e);
+        }
+    }
+
+    // ===================== IMAGE =====================
     public void sendImage(String phone, BufferedImage image) {
 
         try {

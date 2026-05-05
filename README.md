@@ -4,29 +4,33 @@ caio.silva@TCCRMNCRC5KB4 MINGW64 ~/projetos/whatsapp-notifications-template (env
 
 compilar
 javac -cp "lib/json-20240303.jar;." -encoding UTF-8 -d out $(find src/main/java -name "*.java")
-$ cp -r src/main/resources/* out/
+cp -r src/main/resources/* out/
 
 rodar
 java -cp "out;lib/json-20240303.jar" br.com.torra.whatsapp.Main
 Servidor rodando em http://localhost:8080/webhook
 
 
-curl -X POST https://graph.facebook.com/v25.0/1157240740795278/messages -H "Authorization: Bearer EAApo24Aj0C4BRRYhFGxk6jwoAPMWCLWF62JEbnDZBCZCZBoSbJy3qZBobcw1ZAO7n32rLl27wSZBIZCN6jHz1beALvIi7lUpxBwCSttFmsHshK13U3pB5Hzhq3uZBZBieNxB1sUrOAuqUK2Ucb1VMciA6Ac9loEB9ZCxorwZCWeeO7dCjTZCd1vuS38PnRxbL2EI5I2pdKzZCZCeIa8j5KFgUjHwqpl3E68tF7IKga1XZAGUh2biyybfcYJpv3KUtrbdoO0pZAtlMHdDfeU0a6xeShYSP2IDby8ZA" -H "Content-Type: application/json" -d '{
+curl -X POST https://graph.facebook.com/v25.0/1157240740795278/messages \
+-H "Authorization: Bearer EAApo24Aj0C4BRaoQI4HRRSPs6rEH4YN0qiQJUjPbpqmiJse0G40U1CD27VVm0c82ojj53J7eUyLEfWKx7KKNp8ZBF7s9TkpvLA40afrUVPx4nsmgTKcZCky0ZBrZCXFK5r1lPfyxZAGvr2ZCiI3HCMnN22k4UvvzSEZCciblFUSTvYrcOLnbBlsAS3PzkEXXiBSftFbkhsZBq2vdBRZBu1RtQnjfxjZByX0qnWFOEmWeoZCrEYEZAPuVkHsj99wWfo0XldUtNyHr7EuLMZCJU9Yf30HZBQZAu2q" \
+-H "Content-Type: application/json" \
+-d '{
   "messaging_product": "whatsapp",
   "to": "5511984696489",
   "type": "template",
   "template": {
-    "name": "dados_hora",
-    "language": { "code": "pt_BR" },
+    "name": "modelo_hora",
+    "language": { "code": "pt_br" },
     "components": [
       {
         "type": "body",
         "parameters": [
-          { "type": "text", "text": "Loja Centro SP" },
-          { "type": "text", "text": "10/04/2026" }
+          { "type": "text", "text": "https://seusistema.com/metas?phone=5511984696489" }
         ]
       }
     ]
   }
 }'
+
+
 

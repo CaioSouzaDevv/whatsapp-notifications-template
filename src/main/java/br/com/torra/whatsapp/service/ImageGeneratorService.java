@@ -1,25 +1,21 @@
 package br.com.torra.whatsapp.service;
 
-import br.com.torra.whatsapp.model.MetricStatus;
 import br.com.torra.whatsapp.model.StoreNotificationData;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class ImageGeneratorService {
 
-    private final MetricEvaluator metricEvaluator;
-
-    public ImageGeneratorService() {
-        this.metricEvaluator = new MetricEvaluator();
-    }
-
+    // =========================
+    // 🔴 MÉTODO ANTIGO (WEBHOOK)
+    // =========================
     public BufferedImage generateImage(
             String templatePath,
             String outputPath,
@@ -31,187 +27,146 @@ public class ImageGeneratorService {
                 .getResourceAsStream(templatePath);
 
         if (templateStream == null) {
-            throw new RuntimeException("Template não encontrado em: " + templatePath);
+            throw new RuntimeException("Template não encontrado: " + templatePath);
         }
 
-        BufferedImage bufferedImage = ImageIO.read(templateStream);
+        BufferedImage image = ImageIO.read(templateStream);
 
-        Graphics2D graphics = bufferedImage.createGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g = image.createGraphics();
 
-        drawHeaderStoreName(graphics, "Meta " + safeValue(item.getStoreName()));
-        drawMetrics(graphics, item);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        g.setColor(Color.BLACK);
+        g.drawString(item.getStoreName(), 50, 80);
 
-        graphics.dispose();
+        g.dispose();
 
-        ImageIO.write(bufferedImage, "png", new File(outputPath));
+        ImageIO.write(image, "png", new File(outputPath));
 
-        return bufferedImage;
+        return image;
     }
 
-    private void drawHeaderStoreName(Graphics2D graphics, String storeName) {
-        graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Roboto", Font.BOLD, 36));
-        graphics.drawString(storeName, 400, 150);
+    // =========================
+    // 🟢 NOVO (WHATSAPP)
+    // =========================
+    public BufferedImage generateWhatsAppImage(
+            List<StoreNotificationData> dados,
+            String coordenador
+    ) throws Exception {
+
+        List<StoreNotificationData> filtrados = filtrarPorCoordenador(dados, coordenador);
+
+        int width = 1080;
+        int height = 1350;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, width, height);
+
+        drawHeader(g, coordenador);
+        drawCards(g, filtrados);
+        drawTopFiliais(g, filtrados);
+
+        g.dispose();
+
+        ImageIO.write(image, "png", new File("resultado.png"));
+
+        return image;
     }
 
-    private void drawMetrics(Graphics2D graphics, StoreNotificationData item) {
-        int startY = 430;
-        int lineHeight = 48;
+    private void drawHeader(Graphics2D g, String coordenador) {
+        g.setColor(new Color(40, 40, 40));
+        g.setFont(new Font("Arial", Font.BOLD, 36));
+        g.drawString("Meta HORA", 40, 60);
 
-        int labelX = 300;
-        int valueX = 630;
-        int arrowX = valueX + 38;
-
-        
-
-        Color primaryColor = new Color(255, 81, 1);
-        Font labelFont = new Font("Roboto", Font.BOLD, 28);
-        Font valueFont = new Font("Roboto", Font.BOLD, 28);
-
-        graphics.setColor(primaryColor);
-
-        drawMetricLine(
-                graphics,
-                "Meta Ativados:",
-                item.getMetaAtivados(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY,
-                null,
-                null);
-
-        drawMetricLine(
-                graphics,
-                "Aprovações:",
-                item.getQtdAprovacoes(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY += lineHeight,
-                safeParse(item.getQtdAprovacoes()),
-                safeParse(item.getMetaAtivados()));
-
-        drawMetricLine(
-                graphics,
-                "Aprovações LY:",
-                item.getQtdAprovacoesLy(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY += lineHeight,
-                safeParse(item.getQtdAprovacoesLy()),
-                safeParse(item.getQtdAprovacoes()));
-
-        drawMetricLine(
-                graphics,
-                "Propostas:",
-                item.getQtdPropostas(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY += lineHeight,
-                null,
-                null);
-
-        startY += 34;
-
-        drawMetricLine(
-                graphics,
-                "Meta PCJ:",
-                item.getMetaPadraoPcj(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY += lineHeight,
-                null,
-                null);
-
-        drawMetricLine(
-                graphics,
-                "Meta Participação:",
-                item.getMetaPadraoParticipacao(),
-                labelFont,
-                valueFont,
-                labelX,
-                valueX,
-                arrowX,
-                startY += lineHeight,
-                null,
-                null);
+        g.setFont(new Font("Arial", Font.PLAIN, 24));
+        g.setColor(new Color(80, 80, 80));
+        g.drawString("Coordenador: " + coordenador, 40, 100);
     }
 
-    private void drawMetricLine(
-            Graphics2D graphics,
-            String label,
-            String value,
-            Font labelFont,
-            Font valueFont,
-            int xLabel,
-            int xValue,
-            int xArrow,
-            int y,
-            Double actualValue,
-            Double targetValue) {
+    private void drawCards(Graphics2D g, List<StoreNotificationData> dados) {
 
-        graphics.setColor(new Color(255, 81, 1));
+        StoreNotificationData exemplo = dados.isEmpty()
+                ? new StoreNotificationData("", "", "", "", "", "", "", "", "")
+                : dados.get(0);
 
-        graphics.setFont(labelFont);
-        graphics.drawString(label, xLabel, y);
+        drawCard(g, 40, 140, "PCJ", exemplo.getPcjPercentual());
+        drawCard(g, 380, 140, "Participação", exemplo.getParticipacaoPercentual());
+        drawCard(g, 720, 140, "Aproveitamento", exemplo.getAproveitamentoPercentual());
+    }
 
-        graphics.setFont(valueFont);
-        graphics.drawString(safeValue(value), xValue, y);
+    private void drawCard(Graphics2D g, int x, int y, String titulo, String valor) {
 
-        if (actualValue != null && targetValue != null) {
-            MetricStatus status = metricEvaluator.evaluate(actualValue, targetValue);
-            drawStatusArrow(graphics, status, xArrow, y);
+        g.setColor(new Color(214, 234, 228));
+        g.fillRoundRect(x, y, 300, 160, 20, 20);
+
+        g.setColor(new Color(50, 65, 70));
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString(titulo, x + 20, y + 35);
+
+        g.setColor(new Color(230, 85, 45));
+        g.setFont(new Font("Arial", Font.BOLD, 42));
+        g.drawString(valor(valor), x + 20, y + 95);
+    }
+
+    private void drawTopFiliais(Graphics2D g, List<StoreNotificationData> dados) {
+
+        List<StoreNotificationData> top = topFiliais(dados, 5);
+
+        int y = 360;
+
+        g.setFont(new Font("Arial", Font.BOLD, 24));
+        g.setColor(Color.BLACK);
+        g.drawString("Top Filiais", 40, y);
+
+        y += 40;
+
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        for (StoreNotificationData item : top) {
+
+            g.drawString(valor(item.getStoreName()), 40, y);
+            g.drawString("PCJ: " + valor(item.getPcjPercentual()), 400, y);
+            g.drawString("Aprov: " + valor(item.getAprovados()), 650, y);
+
+            y += 35;
         }
     }
 
-    private void drawStatusArrow(Graphics2D graphics, MetricStatus status, int x, int y) {
-        Color green = new Color(34, 177, 76);
-        Color red = new Color(220, 53, 69);
+    private List<StoreNotificationData> filtrarPorCoordenador(List<StoreNotificationData> dados, String coordenador) {
+        List<StoreNotificationData> result = new ArrayList<>();
 
-        Font arrowFont = new Font("Arial", Font.BOLD, 24);
-        graphics.setFont(arrowFont);
-
-        if (status == MetricStatus.GOOD) {
-   
-            graphics.setColor(green);
-            graphics.drawString("▲", x, y - 2);
-            return;
+        for (StoreNotificationData item : dados) {
+            if (coordenador.equalsIgnoreCase(valor(item.getCoordenadorCartao()))) {
+                result.add(item);
+            }
         }
 
-        graphics.setColor(red);
-        graphics.drawString("▼", x, y);
+        return result;
     }
 
-    private Double safeParse(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
+    private List<StoreNotificationData> topFiliais(List<StoreNotificationData> dados, int limit) {
 
+        return dados.stream()
+                .filter(d -> d.getStoreName() != null && !d.getStoreName().isBlank())
+                .sorted(Comparator.comparingDouble(this::safePcj).reversed())
+                .limit(limit)
+                .toList();
+    }
+
+    private double safePcj(StoreNotificationData d) {
         try {
-            String normalized = value.trim().replace(",", ".");
-            return Double.parseDouble(normalized);
+            return Double.parseDouble(valor(d.getPcjPercentual()).replace("%", "").replace(",", "."));
         } catch (Exception e) {
-            return null;
+            return 0;
         }
     }
 
-    private String safeValue(String value) {
-        return value == null || value.isBlank() ? "-" : value;
+    private String valor(String v) {
+        return (v == null || v.isBlank()) ? "-" : v;
     }
 }
